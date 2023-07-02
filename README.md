@@ -5,9 +5,6 @@ This DNS Server will run locally on your computer and allow your PlayStation 3 t
 
 ## Setup
 
-Setup process is the same as shown on our guide
-https://wii.guide/riiconnect24 
-
 You will only need to change DNS Settings in your PS3.
 
 First, make sure that your PS3 is connected to the same network as your computer is.
@@ -16,7 +13,7 @@ First, make sure that your PS3 is connected to the same network as your computer
 
 # Running on Windows:
 
-Run the .exe provided [on the releases page](https://github.com/RiiConnect24/RiiConnect24-DNS-Server/releases). If your antivirus notifies you about the .exe file, allow it and run it. If it doesn't work, you should also allow communication for this this .exe in your firewall settings. 
+Run the .exe provided [on the releases page](https://github.com/qfoxb/GoCentral-DNS/releases). If your antivirus notifies you about the .exe file, allow it and run it. If it doesn't work, you should also allow communication for this this .exe in your firewall settings. 
 
 # Running on Linux/macOS:
 
@@ -50,9 +47,9 @@ To compile this app on Windows, you will need to run these two commands (Importa
 >pip install dnslib requests pyinstaller
 
 Once it's done installing, run:
->pyinstaller RiiConnect24-DNS-Server.spec
+>pyinstaller GoCentral-DNS-Server.spec
 
-| Tip: You may need to edit RiiConnect24-DNS-Server_v1.0.spec so the compiling process works on your computer.
+| Tip: You may need to edit GoCentral-DNS-Server_v1.0.spec so the compiling process works on your computer.
 
 # Setting up Pi-hole
 
