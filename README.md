@@ -1,22 +1,22 @@
-RiiConnect24 DNS Server [![Actions Status](https://github.com/RiiConnect24/DNS-Server/workflows/Build/badge.svg)](https://github.com/RiiConnect24/DNS-Server/actions)
+GoCentral DNS Server [![Actions Status](https://github.com/qfoxb/GoCentral-DNS/workflows/Build/badge.svg)](https://github.com/qfoxb/GoCentral-DNS/actions)
 ===
 
-This DNS Server will run locally on your computer and allow your Wii to connect to RiiConnect24 servers even if your ISP blocks connections to our DNS Server. When you use the DNS on your Wii or with this app, it also enhances the use of services such as Wiimmfi. This tool can also be used as a DNS server for Nintendo DS games.
+This DNS Server will run locally on your computer and allow your PlayStation 3 to connect to [GoCentral](https://github.com/ihatecompvir/GoCentral) servers even if your ISP blocks connections to our DNS Server. When you use the DNS on your PS3 or with this app, you can connect to the [Open Source GoCentral server.](https://github.com/ihatecompvir/GoCentral)
 
 ## Setup
 
 Setup process is the same as shown on our guide
 https://wii.guide/riiconnect24 
 
-You will only need to change DNS Settings in your Wii.
+You will only need to change DNS Settings in your PS3.
 
-First, make sure that your Wii is connected to the same network as your computer is.
+First, make sure that your PS3 is connected to the same network as your computer is.
 
-**If you use Pi-hole, please see [Setting up Pi-hole](#Setting-up-Pi-hole)**
+###  If you use Pi-hole, please see [Setting up Pi-hole](#Setting-up-Pi-hole)
 
 # Running on Windows:
 
-Run the .exe provided [on the releases page](https://github.com/RiiConnect24/RiiConnect24-DNS-Server/releases). If your antivirus notifies you about the .exe file, allow it and run it. If it doesn't work, you should also allow communication for this this .exe in your firewall settings.
+Run the .exe provided [on the releases page](https://github.com/RiiConnect24/RiiConnect24-DNS-Server/releases). If your antivirus notifies you about the .exe file, allow it and run it. If it doesn't work, you should also allow communication for this this .exe in your firewall settings. 
 
 # Running on Linux/macOS:
 
@@ -26,7 +26,7 @@ You will need to install Python 3 and run these commands in the Terminal.
 
 To run it, simply type in:
 
-> sudo python3 RiiConnect24-DNS-Server.py
+> sudo python3 GoCentral-DNS-Server.py
 
 Replace `python3` with the name/path to your Python binary if necessary
 
@@ -59,9 +59,17 @@ Once it's done installing, run:
 On the server running Pi-hole, run the following command:
 
 ```bash
-curl https://raw.githubusercontent.com/RiiConnect24/DNS-Server/master/dns_zones-hosts.txt >> /etc/pihole/custom.list
+curl https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones-hosts.txt >> /etc/pihole/custom.list
 ```
-RiiConnect24 domains will be listed on Pi-hole webpage menu under "Local DNS Records".
+GoCentral domains will be listed on Pi-hole webpage menu under "Local DNS Records".
 
 # Need more help?
-You can talk to us over on the [RiiConnect24 Discord server](https://discord.gg/b4Y7jfD), where people can try and help you out!
+Feel free to open a github issue. 
+
+# Credits
+* [GoCentral](https://github.com/ihatecompvir/GoCentral), made by ihatecompvir
+* [RiiConnect24 DNS Server](https://github.com/RiiConnect24/DNS-Server), made by KcrPL and Larsenv
+* [sudomemoDNS](https://github.com/Sudomemo/sudomemoDNS), made by Austin Burk/Team Sudomemo
+* [YARG OpenSource](https://github.com/YARC-Official/OpenSource/), made by EliteAsian123 (go play yarg!!!) Application icon provided by them.
+* [RBEnhanced Team](https://github.com/RBEnhanced), go support Emma and Comp for their amazing RB3 and RBVR mods!
+* [MiloHax](https://github.com/hmxmilohax) for their awesome Milo hacks

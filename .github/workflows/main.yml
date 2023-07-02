@@ -18,10 +18,17 @@ jobs:
         python-version: '3.x'
     - name: Install requirements with PIP
       run: pip install dnslib requests pyinstaller
-    - name: Build DNS-Server
-      run: pyinstaller --onefile RiiConnect24-DNS-Server.spec
+    - name: Build GoCentral-DNS
+      run: pyinstaller --onefile --icon=yarg-3-icon.ico GoCentral-DNS-Server.py
+    - name: VirusTotal Scan
+      continue-on-error: true
+      uses: crazy-max/ghaction-virustotal@v3
+      with:
+        vt_api_key: ${{ secrets.VT_APIKEY}}
+        request_rate: 4
+        files: dist/GoCentral-DNS-Server.exe
     - name: Publish Build Artifacts
       uses: actions/upload-artifact@master
       with:
         name: ${{ matrix.os }}
-        path: dist
+        path: dist/GoCentral-DNS-Server.exe

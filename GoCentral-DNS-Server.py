@@ -2,8 +2,11 @@
 # (c) 2019 Austin Burk/Sudomemo
 # All rights reserved
 
-# RiiConnect24 DNS Server v1.2
+# Based on RiiConnect24 DNS Server v1.2
 # Created by Austin Burk/Sudomemo. Edited by KcrPL and Larsenv.
+
+# GoCentral DNS Server v1.0
+# Created by Austin Burk/Sudomemo. Modified for GoCentral by qfoxb
 
 from datetime import datetime
 from time import sleep
@@ -29,7 +32,7 @@ def get_platform():
 
     return platforms[sys.platform]
 
-RIICONNECT24DNSSERVER_VERSION = "1.2"
+GOCENTRALDNS_VERSION = "1.0"
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -48,29 +51,17 @@ SERIAL = int((datetime.utcnow() - EPOCH).total_seconds())
 MY_IP = get_ip()
 
 print("+===============================+")
-print("|    RiiConnect24 DNS Server    |")
-print("|          Version " + RIICONNECT24DNSSERVER_VERSION + "          |")
+print("|    GoCentral DNS Server     |")
+print("|          Version " + GOCENTRALDNS_VERSION + "          |")
 print("+===============================+\n")
-
-print("Hello! This server will allow you to connect to RiiConnect24 when your Internet Service Provider does not work with custom DNS.")
-
-print("This tool will help you avoid error 107304 in the Forecast/News Channel. When you use the DNS on your Wii / DS or with this app, it also enhances the use of services such as Wiimmfi. This tool can also be used as a DNS server for Nintendo DS games.\n")
-
-
-print("#### How To Use ####\n")
-print("The setup process does not differ from what is shown at https://wii.guide/riiconnect24 except for the values to enter in your custom DNS settings.")
-print("First, make sure that your Wii / DS is connected to the same network as this computer.")
-
-print("\nHere are the settings you need to type in on your Wii in the DNS section.:\n")
+print("Hello! This server will allow you to connect to GoCentral when your Internet Service Provider does not work with custom DNS.")
+print("\nHere are the DNS settings you need to type in on your PlayStation 3 in the DNS section:\n")
 print(":---------------------------:")
 print("  Primary DNS:  ",MY_IP  )
 print("  Secondary DNS: 1.1.1.1")
 print(":---------------------------:")
-
-print("\nAll other settings should match what is shown at the above URL.\n")
-
 print("#### Getting Help ####\n")
-print("Need help? Visit our Discord server https://discord.gg/b4Y7jfD or contact us at support@riiconnect24.net\n")
+print("Need help? Open a GitHub issue.\n")
 
 print("--- Starting up ---")
 
@@ -155,7 +146,7 @@ class Record:
 ZONES = {}
 
 try:
-  get_zones = requests.get("https://raw.githubusercontent.com/RiiConnect24/DNS-Server/master/dns_zones.json")
+  get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
 except requests.exceptions.Timeout:
   print("[ERROR] Couldn't load DNS data: connection to GitHub timed out.")
   print("[ERROR] Are you connected to the Internet?")
@@ -202,11 +193,7 @@ class Resolver:
                         reply.add_answer(soa_record.as_rr(zone_label))
                         found = True
                         break
-            if not found:
-                if "nintendowifi.net" in str(request.q.qname):
-                    reply.add_answer(RR(str(request.q.qname),QTYPE.A,rdata=A("95.217.77.151"),ttl=60))
-                else:
-                    reply.add_answer(RR(str(request.q.qname),QTYPE.A,rdata=A(socket.gethostbyname_ex(str(request.q.qname))[2][0]),ttl=60))
+            
 
         return reply
 
@@ -237,8 +224,8 @@ except PermissionError:
   sys.exit(1)
 
 print("-- Done --- \n")
-print("[INFO] Starting RiiConnect24 DNS server.")
-print("[INFO] Ready. Waiting for your Wii / DS to send DNS Requests...\n")
+print("[INFO] Starting GoCentral DNS server.")
+print("[INFO] Ready. Waiting for your PS3 to send DNS Requests...\n")
 
 if __name__ == '__main__':
     for s in servers:
