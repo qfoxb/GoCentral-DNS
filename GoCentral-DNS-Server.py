@@ -32,7 +32,7 @@ def get_platform():
 
     return platforms[sys.platform]
 
-GOCENTRALDNS_VERSION = "1.0"
+GOCENTRALDNS_VERSION = "1.1"
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -212,7 +212,7 @@ elif get_platform() == 'OS X':
   print("[INFO] If you aren't seeing any requests, check that this is the case first with lsof -i:53 (requires lsof)")
   print("[INFO] To run as root, prefix the command with 'sudo'")
 elif get_platform() == 'Windows':
-  print("[INFO] Please note: If you see a notification about firewall, allow the application to work. If you're using 3rd party  firewall on your computer - you may want to - this program to your firewall and allow traffic.")
+  print("[INFO] Please note: If you see a notification about firewall, allow the application to work. If you're using 3rd party  firewall on your computer you may want to allow this program to your firewall and allow traffic.")
 
 try:
   servers = [
