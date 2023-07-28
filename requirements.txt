@@ -1,2 +1,2 @@
 dnslib==0.9.23
-requests==2.28.1
+requests==2.31.0
