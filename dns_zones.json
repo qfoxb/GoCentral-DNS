@@ -11,6 +11,11 @@
    },
    {
       "type":"a",
+      "name":"p9ps3live.hmxservices.com",
+      "value":"78.141.231.152"
+   },
+   {
+      "type":"a",
       "name":"gh-shared-ps3-auth.mmp3.demonware.net",
       "value":"104.248.103.112"
    },
