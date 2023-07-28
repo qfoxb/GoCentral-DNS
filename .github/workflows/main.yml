@@ -32,3 +32,9 @@ jobs:
       with:
         name: ${{ matrix.os }}
         path: dist/GoCentral-DNS-Server.exe
+    - name: Publish UNIX Artifacts
+      uses: actions/upload-artifact@master
+      with:
+        name: ${{ matrix.os }}
+        path: dist/GoCentral-DNS-Server
+
