@@ -9,7 +9,7 @@ You will only need to change DNS Settings in your PS3.
 
 First, make sure that your PS3 is connected to the same network as your computer is.
 
-###  If you use Pi-hole, please see [Setting up Pi-hole](#Setting-up-Pi-hole)
+###  If you use Pi-hole, please see [Setting up Pi-hole](#setting-up-pi-hole)
 
 # Running on Windows:
 
