@@ -32,7 +32,7 @@ def get_platform():
 
     return platforms[sys.platform]
 
-GOCENTRALDNS_VERSION = "1.1"
+GOCENTRALDNS_VERSION = "1.2"
 
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -193,7 +193,11 @@ class Resolver:
                         reply.add_answer(soa_record.as_rr(zone_label))
                         found = True
                         break
-            
+            if not found:
+                if "hmxservices.com" in str(request.q.qname):
+                    reply.add_answer(RR(str(request.q.qname),QTYPE.A,rdata=A("45.33.48.123"),ttl=60))  # Change this IP to anything else to redirect all other hmxservices requests to a different IP
+                else:
+                    reply.add_answer(RR(str(request.q.qname),QTYPE.A,rdata=A(socket.gethostbyname_ex(str(request.q.qname))[2][0]),ttl=60))
 
         return reply
 
