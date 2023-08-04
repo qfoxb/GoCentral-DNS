@@ -33,6 +33,9 @@ def get_platform():
     return platforms[sys.platform]
 
 GOCENTRALDNS_VERSION = "1.2"
+def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
+def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
+def prYellow(skk): print("\033[93m {}\033[00m" .format(skk))
 get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
@@ -51,11 +54,11 @@ SERIAL = int((datetime.utcnow() - EPOCH).total_seconds())
 MY_IP = get_ip()
 
 print("+===============================+")
-print("|    GoCentral DNS Server     |")
+print("|      GoCentral DNS Server     |")
 print("|          Version " + GOCENTRALDNS_VERSION + "          |")
 print("+===============================+\n")
 print("Hello! This server will allow you to connect to GoCentral when your Internet Service Provider does not work with custom DNS.")
-print("\nHere are the DNS settings you need to type in on your PlayStation 3 in the DNS section:\n")
+print("\nHere are the DNS settings you need to type in on your PlayStation 3/Wii in the DNS section:\n")
 print(":---------------------------:")
 print("  Primary DNS:  ",MY_IP  )
 print("  Secondary DNS: 1.1.1.1")
@@ -147,8 +150,8 @@ ZONES = {}
 
 try:
   get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
-  motd = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/motd")
-  versioncheck = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/latest.version")
+  motd = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/dev/motd")
+  versioncheck = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/dev/latest.version")
 except requests.exceptions.Timeout:
   print("[ERROR] Couldn't load DNS data: connection to GitHub timed out.")
   print("[ERROR] Are you connected to the Internet?")
@@ -168,7 +171,6 @@ for zone in zones:
     ZONES[zone["name"]] = [ Record(A, socket.gethostbyname(zone["value"])) ]
 
 print("[INFO] DNS information has been downloaded successfully.")
-print(motd.content)
 
 class Resolver:
     def __init__(self):
@@ -230,7 +232,11 @@ except PermissionError:
   print("[ERROR] Permission error: check that you are running this as Administrator or root")
   sys.exit(1)
 
-print("-- Done --- \n")
+print("-- Done ---")
+prYellow("Message of the day: "+motd.text+"\n")
+if GOCENTRALDNS_VERSION != versioncheck.text:
+  prRed("WARNING: You are not using the latest version of GoCentral DNS Server. Please update to the latest version!")
+    
 print("[INFO] Starting GoCentral DNS server.")
 print("[INFO] Ready. Waiting for your PS3 to send DNS Requests...\n")
 
