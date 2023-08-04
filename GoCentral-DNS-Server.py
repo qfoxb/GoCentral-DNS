@@ -32,8 +32,32 @@ def get_platform():
 
     return platforms[sys.platform]
 
-GOCENTRALDNS_VERSION = "1.2"
+def query_yes_no(question, default="yes"):
+    valid = {"yes": True, "y": True, "ye": True, "no": False, "n": False}
+    if default is None:
+        prompt = " [y/n] "
+    elif default == "yes":
+        prompt = " [Y/n] "
+    elif default == "no":
+        prompt = " [y/N] "
+    else:
+        raise ValueError("invalid default answer: '%s'" % default)
+    while True:
+        sys.stdout.write(question + prompt)
+        choice = input().lower()
+        if default is not None and choice == "":
+            return valid[default]
+        elif choice in valid:
+            return valid[choice]
+        else:
+            sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
 
+GOCENTRALDNS_VERSION = "1.3"
+CROSSPLAY = False
+def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
+def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
+def prYellow(skk): print("\033[93m {}\033[00m" .format(skk))
+get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -51,17 +75,22 @@ SERIAL = int((datetime.utcnow() - EPOCH).total_seconds())
 MY_IP = get_ip()
 
 print("+===============================+")
-print("|    GoCentral DNS Server     |")
+print("|      GoCentral DNS Server     |")
 print("|          Version " + GOCENTRALDNS_VERSION + "          |")
 print("+===============================+\n")
 print("Hello! This server will allow you to connect to GoCentral when your Internet Service Provider does not work with custom DNS.")
-print("\nHere are the DNS settings you need to type in on your PlayStation 3 in the DNS section:\n")
+print("\nHere are the DNS settings you need to type in on your PlayStation 3/Wii in the DNS section:\n")
 print(":---------------------------:")
 print("  Primary DNS:  ",MY_IP  )
 print("  Secondary DNS: 1.1.1.1")
 print(":---------------------------:")
 print("#### Getting Help ####\n")
 print("Need help? Open a GitHub issue.\n")
+if query_yes_no("Would you like to enable PS3 and Wii Crossplay?"):
+    prGreen("Enabling crossplay!")
+    def CROSSPLAY():
+        return True
+    crossplay_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones_crossplay.json")
 
 print("--- Starting up ---")
 
@@ -87,7 +116,7 @@ class RiiConnect24DNSLogger(object):
     def log_reply(self, handler, reply):
         print("[DNS] {" + datetime.now().strftime('%H:%M:%S') + "} Sent    : DNS Response to:  " + handler.client_address[0])
     def log_error(self, handler, e):
-        logger.error("[INFO] {" + datetime.now().strftime('%H:%M:%S') + "} Invalid DNS request from " + handler.client_address[0])
+        prRed("[INFO] {" + datetime.now().strftime('%H:%M:%S') + "} Invalid DNS request from " + handler.client_address[0])
     def log_truncated(self, handler, reply):
         pass
     def log_data(self, dnsobj):
@@ -147,6 +176,8 @@ ZONES = {}
 
 try:
   get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
+  motd = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/dev/motd")
+  versioncheck = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/dev/latest.version")
 except requests.exceptions.Timeout:
   print("[ERROR] Couldn't load DNS data: connection to GitHub timed out.")
   print("[ERROR] Are you connected to the Internet?")
@@ -155,7 +186,10 @@ except requests.exceptions.RequestException as e:
   print("[ERROR] Exception: ",e)
   sys.exit(1)
 try:
-  zones = json.loads(get_zones.text)
+  if CROSSPLAY == True:
+      zones = json.loads(crossplay_zones.text)
+  else:
+        zones = json.loads(get_zones.text)
 except ValueError as e:
   print("[ERROR] Couldn't load DNS data: invalid response from server")
 
@@ -227,7 +261,13 @@ except PermissionError:
   print("[ERROR] Permission error: check that you are running this as Administrator or root")
   sys.exit(1)
 
-print("-- Done --- \n")
+print("-- Done ---")
+prYellow("Message of the day: "+motd.text+"\n")
+if GOCENTRALDNS_VERSION != versioncheck.text:
+  prRed("WARNING: You are not using the latest version of the GoCentral DNS Server. Please update to the latest version!")
+elif GOCENTRALDNS_VERSION == versioncheck.text:
+    prGreen("You are using the latest version of the GoCentral DNS Server! No updates are available.")
+    
 print("[INFO] Starting GoCentral DNS server.")
 print("[INFO] Ready. Waiting for your PS3 to send DNS Requests...\n")
 
