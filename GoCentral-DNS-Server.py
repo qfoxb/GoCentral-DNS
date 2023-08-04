@@ -33,7 +33,7 @@ def get_platform():
     return platforms[sys.platform]
 
 GOCENTRALDNS_VERSION = "1.2"
-
+get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
 def get_ip():
     s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
     try:
@@ -147,6 +147,8 @@ ZONES = {}
 
 try:
   get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
+  motd = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/motd")
+  versioncheck = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/latest.version")
 except requests.exceptions.Timeout:
   print("[ERROR] Couldn't load DNS data: connection to GitHub timed out.")
   print("[ERROR] Are you connected to the Internet?")
@@ -166,6 +168,7 @@ for zone in zones:
     ZONES[zone["name"]] = [ Record(A, socket.gethostbyname(zone["value"])) ]
 
 print("[INFO] DNS information has been downloaded successfully.")
+print(motd.content)
 
 class Resolver:
     def __init__(self):
