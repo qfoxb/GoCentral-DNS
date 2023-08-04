@@ -176,8 +176,8 @@ ZONES = {}
 
 try:
   get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
-  motd = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/dev/motd")
-  versioncheck = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/dev/latest.version")
+  motd = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/motd")
+  versioncheck = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/latest.version")
 except requests.exceptions.Timeout:
   print("[ERROR] Couldn't load DNS data: connection to GitHub timed out.")
   print("[ERROR] Are you connected to the Internet?")
