@@ -88,8 +88,7 @@ print("#### Getting Help ####\n")
 print("Need help? Open a GitHub issue.\n")
 if query_yes_no("Would you like to enable PS3 and Wii Crossplay?"):
     prGreen("Enabling crossplay!")
-    def CROSSPLAY():
-        return True
+    CROSSPLAY = True
     crossplay_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones_crossplay.json")
 
 print("--- Starting up ---")
@@ -188,6 +187,7 @@ except requests.exceptions.RequestException as e:
 try:
   if CROSSPLAY == True:
       zones = json.loads(crossplay_zones.text)
+      print("Egg Fried Rice")
   else:
         zones = json.loads(get_zones.text)
 except ValueError as e:
