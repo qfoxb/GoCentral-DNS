@@ -187,7 +187,6 @@ except requests.exceptions.RequestException as e:
 try:
   if CROSSPLAY == True:
       zones = json.loads(crossplay_zones.text)
-      print("Egg Fried Rice")
   else:
         zones = json.loads(get_zones.text)
 except ValueError as e:
