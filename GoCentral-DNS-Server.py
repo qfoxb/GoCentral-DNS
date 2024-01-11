@@ -6,7 +6,7 @@
 # Created by Austin Burk/Sudomemo. Edited by KcrPL and Larsenv.
 
 # GoCentral DNS Server v2.0
-# Created by Austin Burk/Sudomemo. Modified for GoCentral by qfoxb
+# Created by Austin Burk/Sudomemo. Modified for GoCentral by qfoxb & femou
 
 from datetime import datetime
 from time import sleep
@@ -57,6 +57,7 @@ GOCENTRALDNS_VERSION = "2.0"
 CROSSPLAY = False
 SAFEMODE = True
 def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
+def prBlue(skk): print("\033[96m {}\033[00m" .format(skk))
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 def prYellow(skk): print("\033[93m {}\033[00m" .format(skk))
 get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
@@ -240,11 +241,12 @@ class Resolver:
                 domain = str(request.q.qname)
                 if SAFEMODE and not any(domain.endswith(str(specified_domain)) for specified_domain in specified_domains):
                     # Log blocked domain to file
-                    self.log_blocked_domain(domain)
-                    return None  # Don't return anything if not in specified domains
-
+                    #self.log_blocked_domain(domain)
+                    reply = request.reply()
+                    reply.add_answer(RR(domain, QTYPE.A, rdata=A("0.0.0.0"), ttl=60))
+                    
                 try:
-                   # reply = request.reply()
+                    reply = request.reply()
                     if domain.endswith("hmxservices.com"):
                         reply.add_answer(RR(domain, QTYPE.A, rdata=A("78.141.231.152"), ttl=60))
                     else:
@@ -257,7 +259,7 @@ class Resolver:
                 return reply if reply else request.reply()  # Ensure a valid reply object is returned
 
 
-        except Exception as e:
+        except Exception as e: 
             prRed(f"[ERROR] An unexpected error occurred: {e}")
             return request.reply()  # Ensure a valid reply object is returned
 
@@ -276,6 +278,8 @@ elif get_platform() == 'OS X':
   print("[INFO] To run as root, prefix the command with 'sudo'")
 elif get_platform() == 'Windows':
   print("[INFO] Please note: If you see a notification about firewall, allow the application to work. If you're using 3rd party  firewall on your computer you may want to allow this program to your firewall and allow traffic.")
+if not SAFEMODE:
+    print("[INFO]: You are not using SAFEMODE. This means that all DNS requests will be forwarded to your ISP's DNS server. This is okay on your home network, but if you are forwarding this server on a public port, you should enable SAFEMODE.")
 
 try:
   servers = [
@@ -283,18 +287,19 @@ try:
     DNSServer(resolver=resolver, port=53, address=MY_IP, tcp=False, logger=dnsLogger),
   ]
 except PermissionError:
-  print("[ERROR] Permission error: check that you are running this as Administrator or root")
+  prRed("[ERROR] Permission error: check that you are running this as Administrator or root")
   sys.exit(1)
 
-print("-- Done ---")
-prYellow("Message of the day: "+motd.text+"\n")
+print("-- Done --")
+prBlue("Message of the day: "+motd.text+"")
 if GOCENTRALDNS_VERSION != versioncheck.text:
-  prRed("WARNING: You are not using the latest version of the GoCentral DNS Server. Please update to the latest version!")
+  prRed("[ERROR]: You are not using the latest version of the GoCentral DNS Server. Please update to the latest version!")
+
 elif GOCENTRALDNS_VERSION == versioncheck.text:
     prGreen("You are using the latest version of the GoCentral DNS Server! No updates are available.")
     
 print("[INFO] Starting GoCentral DNS server.")
-print("[INFO] Ready. Waiting for your PS3 to send DNS Requests...\n")
+print("[INFO] Ready. Waiting for DNS Requests...\n")
 
 if __name__ == '__main__':
     for s in servers:
