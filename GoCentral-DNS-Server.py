@@ -205,6 +205,11 @@ print("[INFO] DNS information has been downloaded successfully.")
 class Resolver:
     def __init__(self):
         self.zones = {DNSLabel(k): v for k, v in ZONES.items()}
+        self.blocked_domains_log = "blocked_domains.txt"  # Specify the path to the log file
+
+    def log_blocked_domain(self, domain):
+        with open(self.blocked_domains_log, 'a') as log_file:
+            log_file.write(f"{domain}\n")
 
     def resolve(self, request, handler):
         reply = request.reply()
@@ -231,11 +236,18 @@ class Resolver:
             if not found:
                 domain = str(request.q.qname)
                 if SAFEMODE and not any(domain.endswith(specified_domain) for specified_domain in specified_domains):
+                    # Log blocked domain to file
+                    self.log_blocked_domain(domain)
                     return None  # Don't return anything if not in specified domains
-                if "hmxservices.com" in domain:
-                    reply.add_answer(RR(domain, QTYPE.A, rdata=A("78.141.231.152"), ttl=60))
-                else:
-                    reply.add_answer(RR(domain, QTYPE.A, rdata=A(socket.gethostbyname_ex(domain)[2][0]), ttl=60))
+                try:
+                    if "hmxservices.com" in domain:
+                        reply.add_answer(RR(domain, QTYPE.A, rdata=A("78.141.231.152"), ttl=60))
+                    else:
+                        ip_address = socket.gethostbyname_ex(domain)[2][0]
+                        reply.add_answer(RR(domain, QTYPE.A, rdata=A(ip_address), ttl=60))
+                except socket.gaierror as e:
+                    prRed(f"[ERROR] Failed to resolve IP for {domain}: {e}")
+                    # You can choose to log or handle the error as needed
 
         return reply
 resolver = Resolver()
