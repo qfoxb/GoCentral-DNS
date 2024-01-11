@@ -212,44 +212,55 @@ class Resolver:
             log_file.write(f"{domain}\n")
 
     def resolve(self, request, handler):
-        reply = request.reply()
-        zone = self.zones.get(request.q.qname)
-        if zone is not None:
-            print(request.q.qname)
-            for zone_records in zone:
-                rr = zone_records.try_rr(request.q)
-                rr and reply.add_answer(rr)
-        else:
-            # no direct zone so look for an SOA record for a higher level zone
-            found = False
-            print(request.q.qname)
-            for zone_label, zone_records in self.zones.items():
-                if request.q.qname.matchSuffix(zone_label):
-                    try:
-                        soa_record = next(r for r in zone_records if r.is_soa)
-                    except StopIteration:
-                        continue
-                    else:
-                        reply.add_answer(soa_record.as_rr(zone_label))
-                        found = True
-                        break
-            if not found:
+        try:
+            zone = self.zones.get(request.q.qname)
+            if zone is not None:
+                reply = request.reply()
+                for zone_records in zone:
+                    rr = zone_records.try_rr(request.q)
+                    rr and reply.add_answer(rr)
+                return reply  # Make sure to return the reply object here
+            else:
+                # no direct zone so look for an SOA record for a higher level zone
+                found = False
+                for zone_label, zone_records in self.zones.items():
+                    if request.q.qname.matchSuffix(zone_label):
+                        try:
+                            soa_record = next(r for r in zone_records if r.is_soa)
+                        except StopIteration:
+                            continue
+                        else:
+                            reply = request.reply()
+                            reply.add_answer(soa_record.as_rr(zone_label))
+                            found = True
+                            break
+                if found:
+                    return reply  # Make sure to return the reply object here
+
                 domain = str(request.q.qname)
                 if SAFEMODE and not any(domain.endswith(str(specified_domain)) for specified_domain in specified_domains):
                     # Log blocked domain to file
                     self.log_blocked_domain(domain)
                     return None  # Don't return anything if not in specified domains
+
                 try:
-                    if "hmxservices.com" in domain:
+                   # reply = request.reply()
+                    if domain.endswith("hmxservices.com"):
                         reply.add_answer(RR(domain, QTYPE.A, rdata=A("78.141.231.152"), ttl=60))
                     else:
                         ip_address = socket.gethostbyname_ex(domain)[2][0]
                         reply.add_answer(RR(domain, QTYPE.A, rdata=A(ip_address), ttl=60))
                 except socket.gaierror as e:
                     prRed(f"[ERROR] Failed to resolve IP for {domain}: {e}")
-                    # You can choose to log or handle the error as needed
+                    reply = None  # Set reply to None to avoid AttributeError later
 
-        return reply
+                return reply if reply else request.reply()  # Ensure a valid reply object is returned
+
+
+        except Exception as e:
+            prRed(f"[ERROR] An unexpected error occurred: {e}")
+            return request.reply()  # Ensure a valid reply object is returned
+
 resolver = Resolver()
 dnsLogger = RiiConnect24DNSLogger()
 
