@@ -235,7 +235,7 @@ class Resolver:
                         break
             if not found:
                 domain = str(request.q.qname)
-                if SAFEMODE and not any(domain.endswith(specified_domain) for specified_domain in specified_domains):
+                if SAFEMODE and not any(domain.endswith(str(specified_domain)) for specified_domain in specified_domains):
                     # Log blocked domain to file
                     self.log_blocked_domain(domain)
                     return None  # Don't return anything if not in specified domains
