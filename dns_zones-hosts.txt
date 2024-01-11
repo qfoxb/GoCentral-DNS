@@ -1,4 +1,5 @@
-45.33.48.123 rb3ps3live.hmxservices.com
+78.141.231.152 rb3ps3live.hmxservices.com
+78.141.231.152 rb2ps3live.hmxservices.com
 78.141.231.152 rpgps3live.hmxservices.com
 78.141.231.152 p9ps3live.hmxservices.com
 104.248.103.112 gh-shared-ps3-auth.mmp3.demonware.net

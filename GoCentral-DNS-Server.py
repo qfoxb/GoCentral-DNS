@@ -5,7 +5,7 @@
 # Based on RiiConnect24 DNS Server v1.2
 # Created by Austin Burk/Sudomemo. Edited by KcrPL and Larsenv.
 
-# GoCentral DNS Server v1.0
+# GoCentral DNS Server v2.0
 # Created by Austin Burk/Sudomemo. Modified for GoCentral by qfoxb
 
 from datetime import datetime
@@ -19,6 +19,7 @@ import socket
 import requests
 import json
 import sys
+import re
 
 def get_platform():
     platforms = {
@@ -52,8 +53,9 @@ def query_yes_no(question, default="yes"):
         else:
             sys.stdout.write("Please respond with 'yes' or 'no' " "(or 'y' or 'n').\n")
 
-GOCENTRALDNS_VERSION = "1.3"
+GOCENTRALDNS_VERSION = "2.0"
 CROSSPLAY = False
+SAFEMODE = True
 def prGreen(skk): print("\033[92m {}\033[00m" .format(skk))
 def prRed(skk): print("\033[91m {}\033[00m" .format(skk))
 def prYellow(skk): print("\033[93m {}\033[00m" .format(skk))
@@ -86,10 +88,10 @@ print("  Secondary DNS: 1.1.1.1")
 print(":---------------------------:")
 print("#### Getting Help ####\n")
 print("Need help? Open a GitHub issue.\n")
-if query_yes_no("Would you like to enable PS3 and Wii Crossplay?"):
-    prGreen("Enabling crossplay!")
-    CROSSPLAY = True
-    crossplay_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones_crossplay.json")
+#if query_yes_no("Would you like to enable PS3 and Wii Crossplay?"):
+#    prGreen("Enabling crossplay!")
+#    CROSSPLAY = True
+#    crossplay_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones_crossplay.json")
 
 print("--- Starting up ---")
 
@@ -177,6 +179,7 @@ try:
   get_zones = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/dns_zones.json")
   motd = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/motd")
   versioncheck = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/latest.version")
+  specified_domains = requests.get("https://raw.githubusercontent.com/qfoxb/GoCentral-DNS/master/specified_domains")
 except requests.exceptions.Timeout:
   print("[ERROR] Couldn't load DNS data: connection to GitHub timed out.")
   print("[ERROR] Are you connected to the Internet?")
@@ -185,9 +188,6 @@ except requests.exceptions.RequestException as e:
   print("[ERROR] Exception: ",e)
   sys.exit(1)
 try:
-  if CROSSPLAY == True:
-      zones = json.loads(crossplay_zones.text)
-  else:
         zones = json.loads(get_zones.text)
 except ValueError as e:
   print("[ERROR] Couldn't load DNS data: invalid response from server")
@@ -197,6 +197,8 @@ for zone in zones:
     ZONES[zone["name"]] = [ Record(A, zone["value"]) ]
   elif zone["type"] == "p":
     ZONES[zone["name"]] = [ Record(A, socket.gethostbyname(zone["value"])) ]
+#with open(specified_domains) as file:
+ #   specified_domains = [line.strip() for line in file]
 
 print("[INFO] DNS information has been downloaded successfully.")
 
@@ -227,14 +229,15 @@ class Resolver:
                         found = True
                         break
             if not found:
-                if "hmxservices.com" in str(request.q.qname):
-                    reply.add_answer(RR(str(request.q.qname),QTYPE.A,rdata=A("45.33.48.123"),ttl=60))  # Change this IP to anything else to redirect all other hmxservices requests to a different IP
+                domain = str(request.q.qname)
+                if SAFEMODE and not any(domain.endswith(specified_domain) for specified_domain in specified_domains):
+                    return None  # Don't return anything if not in specified domains
+                if "hmxservices.com" in domain:
+                    reply.add_answer(RR(domain, QTYPE.A, rdata=A("78.141.231.152"), ttl=60))
                 else:
-                    reply.add_answer(RR(str(request.q.qname),QTYPE.A,rdata=A(socket.gethostbyname_ex(str(request.q.qname))[2][0]),ttl=60))
+                    reply.add_answer(RR(domain, QTYPE.A, rdata=A(socket.gethostbyname_ex(domain)[2][0]), ttl=60))
 
         return reply
-
-
 resolver = Resolver()
 dnsLogger = RiiConnect24DNSLogger()
 
