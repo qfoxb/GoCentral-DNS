@@ -1,4 +1,5 @@
 45.33.44.103 rb3ps3live.hmxservices.com
+45.33.44.103 rb3wiilive.hmxservices.com
 104.248.103.112 gh-shared-ps3-auth.mmp3.demonware.net
 104.248.103.112 gh-shared-ps3-live.lsg.demonware.net
 104.248.103.112 gh5-ps3-live-lsg.mmp3.demonware.net
