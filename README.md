@@ -1,3 +1,7 @@
+> [!CAUTION]
+> If you are using an older version of the hosts file (prior to 7-25-2024) you are connecting to old, outdated and incorrect servers. Please update ASAP!
+>
+> 
 GoCentral DNS Server [![Actions Status](https://github.com/qfoxb/GoCentral-DNS/workflows/Build/badge.svg)](https://github.com/qfoxb/GoCentral-DNS/actions)
 ===
 
